@@ -38,6 +38,26 @@ def get_penalizer(cfg):
     return penalizer, penalizer_state
 
 
+def get_error_feedback(cfg):
+    if cfg.agent.error_feedback.name == "centralized":
+        import ef14.algorithms.ppo.error_feedback.centralized as centralized
+
+        error_feedback = centralized.update_fn
+    elif cfg.agent.error_feedback.name == "ef14":
+        import ef14.algorithms.ppo.error_feedback.ef14 as ef14
+
+        ef14_cfg = dict(cfg.agent.error_feedback)
+        ef14_cfg.pop("name")
+        error_feedback = functools.partial(
+            ef14.update_fn,
+            **ef14_cfg,
+            num_trajectories_per_env=cfg.agent.num_trajectories_per_env,
+        )
+    else:
+        raise ValueError(f"Unknown error feedback {cfg.agent.error_feedback}")
+    return error_feedback
+
+
 def get_train_fn(cfg):
     if cfg.agent.name == "sac":
         import jax.nn as jnn
@@ -108,7 +128,9 @@ def get_train_fn(cfg):
             activation=activation,
         )
         penalizer, penalizer_params = get_penalizer(cfg)
+        error_feedback = get_error_feedback(cfg)
         agent_cfg.pop("penalizer")
+        agent_cfg.pop("error_feedback")
         train_fn = functools.partial(
             ppo.train,
             **agent_cfg,
@@ -117,6 +139,7 @@ def get_train_fn(cfg):
             restore_checkpoint_path=f"{get_state_path()}/ckpt",
             penalizer=penalizer,
             penalizer_params=penalizer_params,
+            error_feedback_factory=error_feedback,
         )
     else:
         raise ValueError(f"Unknown agent name: {cfg.agent.name}")

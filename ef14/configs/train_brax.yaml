@@ -43,7 +43,6 @@ training:
   action_repeat: 1
   render: true
   num_timesteps: 1000000
-  privileged: false
   train_domain_randomization: false
   eval_domain_randomization: false
   store_policy: true

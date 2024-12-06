@@ -1,0 +1,27 @@
+# @package _global_
+defaults:
+  - override /environment: cartpole
+  - override /agent: ppo
+  - override /agent/error_feedback: ef14
+
+training:
+  num_timesteps: 100000000
+  safe: true
+  num_envs: 16
+  safety_budget: 100
+
+environment:
+  task_params:
+    swingup: false
+  
+agent:
+  normalize_observations: true
+  num_minibatches: 32
+  num_updates_per_batch: 16
+  discounting: 0.99
+  batch_size: 1024
+  entropy_cost: 0.01
+  learning_rate: 3e-4
+  safety_gae_lambda: 0.65
+  reward_scaling: 0.5
+  num_trajectories_per_env: 2048

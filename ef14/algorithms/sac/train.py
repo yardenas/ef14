@@ -36,7 +36,6 @@ from brax.v1 import envs as envs_v1
 import ef14.algorithms.sac.losses as sac_losses
 import ef14.algorithms.sac.networks as sac_networks
 from ef14.algorithms.penalizers import Penalizer
-from ef14.benchmark_suites.wrappers import DomainRandomizationParams
 from ef14.rl.evaluation import ConstraintsEvaluator
 
 Metrics: TypeAlias = types.Metrics
@@ -159,7 +158,6 @@ def train(
     randomization_fn: Optional[
         Callable[[base.System, jnp.ndarray], Tuple[base.System, base.System, jax.Array]]
     ] = None,
-    privileged: bool = False,
     safe: bool = False,
     safety_budget: float = float("inf"),
     penalizer: Penalizer | None = None,
@@ -233,12 +231,7 @@ def train(
             action_repeat=action_repeat,
             randomization_fn=vf_randomization_fn,
         )
-    if privileged:
-        env = DomainRandomizationParams(env)
-        domain_parameters = env.domain_parameters
-    else:
-        domain_parameters = None
-
+    domain_parameters = None
     obs_size = env.observation_size
     action_size = env.action_size
 
