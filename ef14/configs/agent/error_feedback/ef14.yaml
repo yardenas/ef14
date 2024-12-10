@@ -1,0 +1,7 @@
+name: ef14
+worker_compression:
+  k: 0.1
+  method: top
+server_compression:
+  k: 0.99
+  method: top

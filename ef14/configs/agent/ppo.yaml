@@ -1,5 +1,6 @@
 defaults:
   - penalizer: crpo
+  - error_feedback: centralized
 
 name: ppo
 max_devices_per_host: null
@@ -22,3 +23,4 @@ normalize_advantage: true
 policy_hidden_layer_sizes: [128, 128, 128]
 value_hidden_layer_sizes: [128, 128, 128]
 activation: tanh
+num_trajectories_per_env: 1
